@@ -149,8 +149,13 @@ if ($PublishProject) {
     $projectData['status'] = 'approved'
     $projectData['is_draft'] = $false
 }
-if ($config.project.issues_url) { $projectData['issues_url'] = $config.project.issues_url }
-if ($config.project.source_url) { $projectData['source_url'] = $config.project.source_url }
+# NOTE: source_url / issues_url are deliberately NOT part of the creation payload. Modrinth verifies
+# them by fetching the URL, and that check is flaky (GitHub rate-limits Modrinth's fetcher often enough
+# that both fields go red). They are PATCHed in afterwards instead, and a failure there is only a
+# warning - it must never block the version upload.
+$linkData = [ordered]@{}
+if ($config.project.issues_url) { $linkData['issues_url'] = $config.project.issues_url }
+if ($config.project.source_url) { $linkData['source_url'] = $config.project.source_url }
 
 $dependencies = @()
 if ($config.version.dependencies) {
@@ -195,11 +200,16 @@ if ($DryRun) {
     Write-Host ''
     Write-Host ("POST {0}/project            (multipart: data + icon)" -f $api)
     Write-Host ($projectData | ConvertTo-Json -Depth 6)
+    if ($linkData.Count -gt 0) {
+        Write-Host ''
+        Write-Host ("PATCH {0}/project/<id>     (links only; a failure here is a warning, not an error)" -f $api)
+        Write-Host ($linkData | ConvertTo-Json -Depth 4)
+    }
     Write-Host ''
     Write-Host ("POST {0}/version            (multipart: data + file)" -f $api)
     Write-Host ($versionData | ConvertTo-Json -Depth 6)
     Write-Host ''
-    Write-Host ("PATCH {0}/project/<slug>/icon?ext=png   (raw image body)" -f $api)
+    Write-Host ("PATCH {0}/project/<id>/icon?ext=png   (raw image body)" -f $api)
     exit 0
 }
 
@@ -244,6 +254,24 @@ if ($null -eq $projectId) {
         Write-Host '  icon updated'
     } else {
         Write-Host '  icon left alone (-SkipIcon)'
+    }
+}
+
+# ----------------------------------------------------------------------------- 1b) links (best effort)
+
+if ($linkData.Count -gt 0) {
+    Write-Host ''
+    Write-Host 'setting project links (source / issues) ...'
+    try {
+        $json = [System.Text.Encoding]::UTF8.GetBytes(($linkData | ConvertTo-Json -Depth 4 -Compress))
+        Invoke-Api -Method Patch -Uri "$api/project/$projectId" -Body $json -ContentType 'application/json' | Out-Null
+        Write-Host '  links updated'
+    } catch {
+        # Modrinth verifies these by fetching the URL, and GitHub rate-limits that fetch often enough
+        # that both fields go red for everyone. Not fatal: the links are also in the README and in the
+        # jar's neoforge.mods.toml, and they can be filled in later when the check recovers.
+        Write-Warning ("could not set the project links: {0}" -f $_.Exception.Message)
+        Write-Warning '  continuing - the links are optional and the version upload does not need them'
     }
 }
 
