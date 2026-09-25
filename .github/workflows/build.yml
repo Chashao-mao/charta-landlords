@@ -1,7 +1,7 @@
 name: Build
 
 # GitHub only reads workflows from the repository root's .github/, so this file lives here even though
-# the Gradle project itself is in mods/chartalandlords (that is what the `defaults.run.working-directory`
+# the Gradle project itself is in mods/chartalandlords (that is what `defaults.run.working-directory`
 # below is for). The steps mirror the verification chains documented in README.md:
 #   1) ./gradlew build             - compile + package (the jar the release is made of)
 #   2) ./gradlew runGameTestServer - 34 GameTests against a real, headless server
@@ -22,11 +22,17 @@ jobs:
     name: Build and verify
     runs-on: ubuntu-latest
 
+    env:
+      # A cold ModDevGradle run downloads Minecraft/NeoForge and then decompiles + remaps them, which
+      # does not fit in the MDK's default -Xmx1G (gradle.properties). Override it for CI runs.
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx3G -XX:MaxMetaspaceSize=1G'
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup JDK 21
+        # v4 only prints a deprecation notice (Node 20); keep it until the run is green, then bump.
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -36,16 +42,42 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build
-        run: ./gradlew build --console=plain --no-daemon
+        run: |
+          set -o pipefail
+          ./gradlew build --console=plain --no-daemon --stacktrace 2>&1 | tee gradle-build.log
 
       - name: Game tests
-        run: ./gradlew runGameTestServer --console=plain --no-daemon
+        run: |
+          set -o pipefail
+          ./gradlew runGameTestServer --console=plain --no-daemon --stacktrace 2>&1 | tee gradle-gametest.log
 
       - name: Pure-logic checks (rule engine, no Minecraft)
         working-directory: .
         # Invoke through `pwsh -File` instead of `./script.ps1`: the runner's checkout does not need
         # the executable bit on the .ps1 for this (the call operator / dot-slash form does).
         run: pwsh -NoProfile -File tools/logic-check.ps1
+
+      # A failed Gradle run only tells the log reader "exit code 1"; surface the real message on the
+      # commit/PR page (and as an artifact) so a failure can be diagnosed without shell access.
+      - name: Report failures
+        if: failure()
+        run: |
+          for log in gradle-build.log gradle-gametest.log; do
+            [ -f "$log" ] || continue
+            echo "=== tail of $log ==="
+            tail -n 30 "$log"
+            tail -n 30 "$log" | while IFS= read -r line; do
+              [ -n "$line" ] && echo "::error title=${log}::${line}"
+            done
+          done
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-logs
+          path: mods/chartalandlords/gradle-*.log
+          if-no-files-found: ignore
 
       - name: Upload mod jar
         uses: actions/upload-artifact@v4
