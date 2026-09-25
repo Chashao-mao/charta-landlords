@@ -31,23 +31,6 @@
 
 界面左上角的 `?`（玩法）里有完整规则、全部牌型与计分说明，中英双语。
 
-## 构建 / 验证 / 发布
-
-```powershell
-cd mods\chartalandlords
-.\gradlew.bat build                # 编译打包 → build\libs\charta-landlords-<version>.jar
-.\gradlew.bat runGameTestServer    # 34 个 GameTest（启动一次无头服务端）
-.\gradlew.bat runClient            # 开发客户端
-.\gradlew.bat dist                 # 发布产物 → ..\..\dist\（jar + 项目图标 + SHA256SUMS.txt）
-
-cd ..\..                           # 纯逻辑校验：440 项断言，毫秒级，不需要 Minecraft
-& tools\logic-check.ps1
-python mods\chartalandlords\tools\check_assets.py   # 资源自检：牌背解码回像素逐字节对拍等
-```
-
-上传 Modrinth：见 [`mods/chartalandlords/README.md`](mods/chartalandlords/README.md) 的「发布到 Modrinth」
-（`tools/upload_modrinth.ps1` 一条命令，先 `-DryRun` 核对）。
-
 ## 目录
 
 | 路径 | 说明 |
