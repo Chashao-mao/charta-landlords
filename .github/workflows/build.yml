@@ -2,10 +2,11 @@ name: Build
 
 # GitHub only reads workflows from the repository root's .github/, so this file lives here even though
 # the Gradle project itself is in mods/chartalandlords (that is what the `defaults.run.working-directory`
-# below is for). The verification steps mirror the three chains documented in README.md:
-#   1) ./gradlew build            - compile + package (the jar the release is made of)
+# below is for). The steps mirror the verification chains documented in README.md:
+#   1) ./gradlew build             - compile + package (the jar the release is made of)
 #   2) ./gradlew runGameTestServer - 34 GameTests against a real, headless server
 #   3) tools/logic-check.ps1       - 440 assertions on the Minecraft-free rule engine (milliseconds)
+# The asset check (tools/check_assets.py) needs Python + Pillow, so it is only run locally for now.
 
 on:
   push:
