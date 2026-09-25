@@ -1,6 +1,4 @@
 # ChartaLandlords
-
-[![Build](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml/badge.svg)](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **斗地主 / Doudizhu (Fight the Landlord) for [Charta](https://modrinth.com/mod/charta)'s card tables.**
