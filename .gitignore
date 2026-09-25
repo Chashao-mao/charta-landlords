@@ -1,0 +1,49 @@
+# Gradle / build outputs
+.gradle/
+.gradle-home/
+build/
+**/build/
+!**/src/**/build/
+
+# dev run directories (worlds, logs, dev-mod copies)
+run/
+run-gametest/
+!**/src/**/run/
+
+# release artifacts: rebuild with `gradlew dist` (releases are published on Modrinth)
+dist/
+
+# pre-extracted Gradle distribution (129 MB zip + ~270 MB unpacked).
+# `gradlew` downloads Gradle 9.2.1 on demand, so this convenience copy stays out of git.
+tools/gradle-9.2.1/
+tools/gradle-9.2.1-bin.zip
+
+# upstream Charta source snapshot used as an API reference (clone it yourself, see README)
+ref/
+
+# Python bytecode cache (check_assets.py imports gen_assets.py)
+__pycache__/
+*.pyc
+
+# scratch directories written by tools/compile-check.ps1
+.check/
+.check-*/
+
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+out/
+repo/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.log

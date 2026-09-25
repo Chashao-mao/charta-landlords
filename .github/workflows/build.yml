@@ -1,0 +1,53 @@
+name: Build
+
+# GitHub only reads workflows from the repository root's .github/, so this file lives here even though
+# the Gradle project itself is in mods/chartalandlords (that is what the `defaults.run.working-directory`
+# below is for). The verification steps mirror the three chains documented in README.md:
+#   1) ./gradlew build            - compile + package (the jar the release is made of)
+#   2) ./gradlew runGameTestServer - 34 GameTests against a real, headless server
+#   3) tools/logic-check.ps1       - 440 assertions on the Minecraft-free rule engine (milliseconds)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: mods/chartalandlords
+
+jobs:
+  build:
+    name: Build and verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: ./gradlew build --console=plain --no-daemon
+
+      - name: Game tests
+        run: ./gradlew runGameTestServer --console=plain --no-daemon
+
+      - name: Pure-logic checks (rule engine, no Minecraft)
+        working-directory: .
+        shell: pwsh
+        run: ./tools/logic-check.ps1
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: charta-landlords-jar
+          path: mods/chartalandlords/build/libs/*.jar
+          if-no-files-found: error

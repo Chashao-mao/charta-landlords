@@ -1,0 +1,32 @@
+{
+  "project": {
+    "slug": "charta-landlords",
+    "title": "ChartaLandlords",
+    "summary_file": "summary.txt",
+    "body_file": "description.md",
+    "categories": ["minigame", "social"],
+    "additional_categories": ["decoration"],
+    "license_id": "MIT",
+    "project_type": "mod",
+    "environment": "client_and_server",
+    "is_draft": true,
+    "issues_url": "https://github.com/Chashao-mao/charta-landlords/issues",
+    "source_url": "https://github.com/Chashao-mao/charta-landlords"
+  },
+  "version": {
+    "name": "ChartaLandlords 1.8.0",
+    "version_number": "1.8.0",
+    "version_type": "release",
+    "game_versions": ["1.21.1"],
+    "loaders": ["neoforge"],
+    "environment": "client_and_server",
+    "changelog_file": "changelog-1.8.0.md",
+    "dependencies": [
+      { "project_slug": "charta", "dependency_type": "required" }
+    ]
+  },
+  "files": {
+    "jar": "dist/charta-landlords-1.8.0.jar",
+    "icon": "dist/charta-landlords-icon.png"
+  }
+}

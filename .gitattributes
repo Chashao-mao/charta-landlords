@@ -1,0 +1,28 @@
+# Keep text files as LF in the repository; the Linux CI runner must get a LF `gradlew`,
+# otherwise the shell wrapper fails with "bad interpreter".
+* text=auto
+
+*.java   text
+*.gradle text
+*.properties text
+*.json   text
+*.md     text
+*.toml   text
+*.ps1    text
+*.py     text
+*.yml    text
+*.xml    text
+
+# Executables / scripts that must never be CRLF
+gradlew     text eol=lf
+gradlew.bat text eol=crlf
+*.sh        text eol=lf
+
+# Binaries: never touch
+*.jar    binary
+*.png    binary
+*.ogg    binary
+*.nbt    binary
+*.mccard binary
+*.mcsuit binary
+*.zip    binary
