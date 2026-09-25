@@ -72,8 +72,7 @@ python mods\chartalandlords\tools\check_assets.py   # 资源自检：牌背解�
 本模组 **MIT**（[`LICENSE`](LICENSE)）。基于 **[Charta](https://modrinth.com/mod/charta)**（作者 Luca Argolo，
 MPL-2.0）开发：牌桌、卡牌、椅子与整个牌局注册表 API 都来自它。牌面素材来自 Charta 的标准牌堆。
 
-背景音乐是本模组**原创**的中国风小调，**不是**腾讯那首《欢乐斗地主》（那首受版权保护）。
-若你持有某首真实曲目的授权，放个资源包（`assets/chartalandlords/sounds/doudizhu_bgm.ogg` + `sounds.json`）即可替换。
+背景音乐资源包（`assets/chartalandlords/sounds/doudizhu_bgm.ogg` + `sounds.json`）即可替换。
 
 详细文档（玩法细节、规则边界、AI 档位、界面与世界牌桌的取舍、发布流程）见
 **[`mods/chartalandlords/README.md`](mods/chartalandlords/README.md)**；
