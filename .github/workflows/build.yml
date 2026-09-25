@@ -42,8 +42,9 @@ jobs:
 
       - name: Pure-logic checks (rule engine, no Minecraft)
         working-directory: .
-        shell: pwsh
-        run: ./tools/logic-check.ps1
+        # Invoke through `pwsh -File` instead of `./script.ps1`: the runner's checkout does not need
+        # the executable bit on the .ps1 for this (the call operator / dot-slash form does).
+        run: pwsh -NoProfile -File tools/logic-check.ps1
 
       - name: Upload mod jar
         uses: actions/upload-artifact@v4
