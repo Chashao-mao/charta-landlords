@@ -1,6 +1,4 @@
 # ChartaLandlords
-
-[![Build](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml/badge.svg)](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **斗地主 / Doudizhu (Fight the Landlord) for [Charta](https://modrinth.com/mod/charta)'s card tables.**
@@ -31,24 +29,6 @@
 
 界面左上角的 `?`（玩法）里有完整规则、全部牌型与计分说明，中英双语。
 
-## 构建 / 验证 / 发布
-
-```powershell
-cd mods\chartalandlords
-.\gradlew.bat build                # 编译打包 → build\libs\charta-landlords-<version>.jar
-.\gradlew.bat runGameTestServer    # 35 个 GameTest（启动一次无头服务端）
-.\gradlew.bat runClient            # 开发客户端
-.\gradlew.bat dist                 # 发布产物 → ..\..\dist\（jar + 项目图标 + SHA256SUMS.txt）
-
-cd ..\..                           # 纯逻辑校验：466 项断言，毫秒级，不需要 Minecraft
-& tools\logic-check.ps1
-& tools\debug-hands.ps1 --help     # 自定义四家手牌，离线验证任意手牌规则
-python mods\chartalandlords\tools\check_assets.py   # 资源自检：牌背解码回像素逐字节对拍等
-```
-
-上传 Modrinth：见 [`mods/chartalandlords/README.md`](mods/chartalandlords/README.md) 的「发布到 Modrinth」
-（`tools/upload_modrinth.ps1` 一条命令，先 `-DryRun` 核对）。
-
 ## 目录
 
 | 路径 | 说明 |
@@ -73,8 +53,7 @@ python mods\chartalandlords\tools\check_assets.py   # 资源自检：牌背解�
 本模组 **MIT**（[`LICENSE`](LICENSE)）。基于 **[Charta](https://modrinth.com/mod/charta)**（作者 Luca Argolo，
 MPL-2.0）开发：牌桌、卡牌、椅子与整个牌局注册表 API 都来自它。牌面素材来自 Charta 的标准牌堆。
 
-背景音乐是本模组**原创**的中国风小调，**不是**腾讯那首《欢乐斗地主》（那首受版权保护）。
-若你持有某首真实曲目的授权，放个资源包（`assets/chartalandlords/sounds/doudizhu_bgm.ogg` + `sounds.json`）即可替换。
+背景音乐资源包（`assets/chartalandlords/sounds/doudizhu_bgm.ogg` + `sounds.json`）即可替换。
 
 详细文档（玩法细节、规则边界、AI 档位、界面与世界牌桌的取舍、发布流程）见
 **[`mods/chartalandlords/README.md`](mods/chartalandlords/README.md)**；

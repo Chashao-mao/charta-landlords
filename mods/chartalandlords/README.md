@@ -4,6 +4,10 @@
 含抢地主 / 叫分、明牌 / 加倍、完整牌型判定、逐对结算与跨局记分板、记牌器与看牌界面、三档 AI 难度，
 以及一段现场合成的中国风 BGM。仓库首页见 [工作区 README](../../README.md)。
 
+> **BGM**：内置曲目是**原创**的中国风小调，**不是**腾讯那首《欢乐斗地主》（那首受版权保护）。
+> 想换成自己的曲子，放个资源包提供 `assets/chartalandlords/sounds/doudizhu_bgm.ogg` + `sounds.json` 即可；
+> 没有授权的商业曲目只可自用，不要发布或打进 jar。
+
 | | |
 | --- | --- |
 | Minecraft / 加载器 | 1.21.1 / NeoForge 21.1.248+ |
@@ -119,7 +123,7 @@ modrinth/                              Modrinth 项目页文案与上传配置
 
 ```powershell
 # 工作目录：mods\chartalandlords
-.\gradlew.bat clean build runGameTestServer dist   # 编译打包 + 35 个 GameTest + 发布产物
+.\gradlew.bat clean build runGameTestServer dist   # 编译打包 + 36 个 GameTest + 发布产物
 & ..\..\tools\logic-check.ps1                      # 466 项断言，零 Minecraft 依赖，毫秒级
 & ..\..\tools\compile-check.ps1 -IncludeTests      # 离线 javac 编译校验
 python tools\check_assets.py                       # 资源自检：.mccard 解码回像素逐字节对拍、牌堆 JSON、图标
