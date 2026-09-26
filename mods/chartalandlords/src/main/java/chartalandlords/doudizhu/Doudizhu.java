@@ -1,11 +1,13 @@
 package chartalandlords.doudizhu;
 
+import chartalandlords.doudizhu.command.DoudizhuDebugCommand;
 import chartalandlords.doudizhu.registry.GameTypes;
 import chartalandlords.doudizhu.registry.Menus;
 import chartalandlords.doudizhu.registry.Payloads;
 import chartalandlords.doudizhu.registry.JokerRanks;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
@@ -51,6 +53,8 @@ public class Doudizhu {
         GameTypes.REGISTRY.register(modBus);
         Menus.REGISTRY.register(modBus);
         modBus.addListener(Payloads::register);
+        // 游戏内调试命令（/doudizhu debug ...）：权限等级 2 或 JVM 参数 -Dchartalandlords.debug=true
+        NeoForge.EVENT_BUS.addListener(DoudizhuDebugCommand::onRegisterCommands);
         LOGGER.info("Doudizhu loaded: Charta extension with joker ranks, decks and game type '{}'",
                 GameTypes.LANDLORDS_PATH);
     }

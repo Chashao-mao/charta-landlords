@@ -145,6 +145,21 @@ python tools\check_assets.py                       # 资源自检：.mccard 解�
   `--rule` 开规则开关（`mixed-joker-rocket` / `no-three-with-two` / …），`--ascii` 让输出纯 ASCII。
 * 不带参数运行 = 自检模式；`logic-check.ps1` 会连它一起跑，所以这个调试器本身也有回归保护。
 
+**游戏内**（真牌桌，直接改这一局的四家手牌 / 地主 / 底牌 / 轮次）：
+
+```text
+/doudizhu debug show                            # 导出当前牌局报告（手牌 / 地主 / 底牌 / 能出的组合 / 提示 / AI）
+/doudizhu debug hand 0 3 3 3 4 5                # 整手替换座位 0 的手牌（牌从这副牌堆里取，花色是真的）
+/doudizhu debug bottom 10 J Q                   # 换底牌（还没发给地主时有效）
+/doudizhu debug landlord 1                      # 指定地主并直接进入出牌阶段
+/doudizhu debug turn 2                          # 强制轮到某一家
+/doudizhu debug rule mixed-joker-rocket true    # 开关规则（房规「两张王算王炸」）
+```
+
+* 权限：默认要权限等级 2（单人存档开作弊 / 服务器 OP）；本地反复调试可以加 JVM 参数
+  `-Dchartalandlords.debug=true` 免权限。
+* `show` 的报告同时写进 `logs/latest.log`；游戏内与离线走的是同一份 `DebugHands` 代码，结论不会漂移。
+
 * **`runGameTestServer` 在模组加载失败时仍报 `BUILD SUCCESSFUL`**（FML 崩溃后退出码仍是 0）——
   通过与否必须看日志里的 `All N required tests passed`。
 * 资源由 `python tools\gen_assets.py` 生成（牌堆 JSON、`.mccard/.mcsuit`、选桌图标、模组 logo、
@@ -181,6 +196,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\upload_modrinth.ps1   
 * 新增房规开关**「两张王也算王炸」（默认关）**：四人局里一小王 + 一大王也算王炸；开了之后四张王炸能压两张王炸。
   标准四人双副牌规则不变（王炸 = 两小王 + 两大王），所以默认行为与之前完全一致。
 * 新增**自定义四家手牌的离线调试器** `tools/debug-hands.ps1`：纯逻辑、不发散、`logic-check.ps1` 里一起跑。
+* 新增**游戏内调试命令** `/doudizhu debug ...`：在真牌桌上改四家手牌 / 底牌 / 地主 / 轮次、开关规则，
+  `show` 导出的报告与离线调试器同源（同时写进 `logs/latest.log`）；权限等级 2 或 `-Dchartalandlords.debug=true`。
 
 ### 1.8.0（首个公开版本）
 

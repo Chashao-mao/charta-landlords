@@ -6,6 +6,7 @@ import chartalandlords.doudizhu.game.engine.AiProfile;
 import chartalandlords.doudizhu.game.engine.RuleEngine;
 import chartalandlords.doudizhu.game.engine.RuleOptions;
 import chartalandlords.doudizhu.game.engine.Combo;
+import chartalandlords.doudizhu.game.engine.DebugHands;
 import chartalandlords.doudizhu.Doudizhu;
 import chartalandlords.doudizhu.registry.JokerRanks;
 import dev.lucaargolo.charta.common.block.entity.CardTableBlockEntity;
@@ -1788,6 +1789,124 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
 
     public int landlordSeat() {
         return landlordSeat;
+    }
+
+    // ------------------------------------------------------------------ 调试接口（/doudizhu debug）
+
+    /**
+     * 调试用：整手替换某家的手牌，并同步「别人看到的遮挡手牌」与界面牌行。
+     *
+     * <p>只给游戏内调试命令用——它会破坏「手牌总数守恒」这个前提，正常流程里绝不该调用。
+     * 改完之后这一家回到点数排序（手动牌序会立刻把临时摆的牌打散，调试时只会碍事）。</p>
+     *
+     * @return 该玩家不属于本局时返回 false
+     */
+    public boolean debugSetHand(CardPlayer player, List<Card> cards) {
+        int seat = players.indexOf(player);
+        if (seat < 0) {
+            return false;
+        }
+        getPlayerHand(player).setCards(new ArrayList<>(cards));
+        manualOrder[seat] = false;
+        sortHand(player);
+        syncCensoredHand(player);
+        refreshHandViews(player);
+        refreshSelectionViews(player);
+        return true;
+    }
+
+    /** 调试用：替换底牌。只有还没翻开（也就是还没发给地主）时有效。 */
+    public boolean debugSetBottom(List<Card> cards) {
+        if (bottomRevealed) {
+            return false;
+        }
+        List<Card> faceDown = new ArrayList<>(cards.size());
+        for (Card card : cards) {
+            Card copy = card.copy();
+            if (!copy.flipped()) {
+                copy.flip();
+            }
+            faceDown.add(copy);
+        }
+        bottomCards.setCards(faceDown);
+        return true;
+    }
+
+    /** 调试用：指定地主并直接进入出牌阶段（跳过叫分 / 明牌加倍）。 */
+    public boolean debugSetLandlord(int seat) {
+        if (seat < 0 || seat >= players.size()) {
+            return false;
+        }
+        landlordSeat = seat;
+        if (!bottomRevealed) {
+            revealBottomCards();
+        } else {
+            placeLandlordMarker();
+        }
+        CardPlayer landlord = players.get(seat);
+        sortHand(landlord);
+        syncCensoredHand(landlord);
+        refreshHandViews(landlord);
+        phase = Phase.PLAYING;
+        currentSeat = seat;
+        setCurrentPlayer(seat);
+        markTurn(seat);
+        lastCombo = null;
+        lastPlaySeat = -1;
+        passCount = 0;
+        playArea.setCards(new ArrayList<>());
+        refreshPlayViews();
+        runGame();
+        return true;
+    }
+
+    /** 调试用：强制轮到某一家（只在出牌阶段有效）。 */
+    public boolean debugSetTurn(int seat) {
+        if (phase != Phase.PLAYING || seat < 0 || seat >= players.size()) {
+            return false;
+        }
+        currentSeat = seat;
+        setCurrentPlayer(seat);
+        markTurn(seat);
+        runGame();
+        return true;
+    }
+
+    /** 调试用：按名字开关一条规则（见 {@link chartalandlords.doudizhu.command.DoudizhuDebugCommand}）。 */
+    public boolean debugSetRuleSwitch(String name, boolean value) {
+        switch (name) {
+            case "mixed-joker-rocket" -> MIXED_JOKER_ROCKET.set(value);
+            case "three-with-two" -> THREE_WITH_TWO.set(value);
+            case "four-with-two" -> FOUR_WITH_TWO.set(value);
+            case "jokers-as-wing-pair" -> JOKERS_AS_WING_PAIR.set(value);
+            case "grab-landlord" -> GRAB_LANDLORD.set(value);
+            case "declare-bonus" -> DECLARE_BONUS.set(value);
+            default -> {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 调试用：把当前牌局导出成 {@link DebugHands} 的文本报告（四家手牌 / 地主 / 底牌 / 上一手 /
+     * 能出的组合 / 提示 / AI 决策）。
+     *
+     * <p>游戏内 {@code /doudizhu debug show} 会把它发到聊天栏并写进日志；离线调试器
+     * {@code tools/debug-hands.ps1} 走的是同一套引擎代码，所以两边结论一致。</p>
+     */
+    public String debugDump() {
+        int seats = players.size();
+        int[][] hands = new int[seats][];
+        for (int seat = 0; seat < seats; seat++) {
+            hands[seat] = DoudizhuValues.sortedValues(handOf(players.get(seat)));
+        }
+        // 底牌：翻开后看界面槽（正面副本），没翻开时看桌面槽
+        List<Card> bottom = new ArrayList<>();
+        (bottomRevealed ? bottomView : bottomCards).forEach(bottom::add);
+        DebugHands.Table table = new DebugHands.Table(ruleOptions(), hands, landlordSeat,
+                DoudizhuValues.valuesOf(bottom), currentSeat, lastPlaySeat, lastCombo);
+        return DebugHands.report(table, aiProfile(), null, currentSeat, true);
     }
 
     public int lastPlaySeat() {

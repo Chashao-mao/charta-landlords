@@ -1517,6 +1517,65 @@ public class DoudizhuGameTests {
         helper.succeed();
     }
 
+    /**
+     * 调试接口（{@code /doudizhu debug ...} 背后的那几个方法）：改手牌 / 底牌 / 地主 / 轮次 / 规则开关，
+     * 并导出与离线调试器同源的报告。
+     */
+    @GameTest(template = "empty")
+    public static void debugHelpersRewriteTheTable(GameTestHelper helper) {
+        Deck deck = ChartaMod.CARD_DECKS.getDeck(Doudizhu.id("doudizhu"));
+        List<Card> pool = new ArrayList<>(deck.getCards());
+        List<CardPlayer> players = new ArrayList<>();
+        for (int seat = 0; seat < 3; seat++) {
+            players.add(new AiSeat("Debug-" + seat));
+        }
+        DoudizhuGame game = new DoudizhuGame(players, deck);
+        game.startGame();
+
+        // 手牌：整手替换 → 手牌、遮挡手牌、界面牌行三处都要跟着变
+        List<Card> replacement = new ArrayList<>(List.of(pool.get(0), pool.get(1), pool.get(2)));
+        helper.assertTrue(game.debugSetHand(players.get(0), replacement), "debugSetHand must succeed");
+        helper.assertTrue(game.getPlayerHand(players.get(0)).size() == 3,
+                "the hand must hold exactly the cards that were set");
+        helper.assertTrue(game.getCensoredHand(players.get(0)).size() == 3,
+                "the censored hand (what others see) must follow the new hand");
+        for (CardPlayer other : players) {
+            int rows = game.getHandSegments(other).stream().mapToInt(slot -> slot.size()).sum();
+            helper.assertTrue(rows == game.getPlayerHand(other).size(),
+                    "the menu hand rows must mirror the hand for " + other.getName().getString());
+        }
+
+        // 底牌：还没翻开时可以改，翻开之后必须拒绝（否则地主手里的牌会和底牌对不上）
+        helper.assertTrue(game.debugSetBottom(new ArrayList<>(List.of(pool.get(30), pool.get(31), pool.get(32)))),
+                "debugSetBottom must work before the reveal");
+        helper.assertTrue(game.debugSetLandlord(1), "debugSetLandlord must work");
+        helper.assertTrue(game.landlordSeat() == 1, "the landlord seat must be recorded");
+        helper.assertTrue(game.phase() == DoudizhuGame.Phase.PLAYING,
+                "setting the landlord must jump straight to the play phase, got " + game.phase());
+        helper.assertFalse(game.debugSetBottom(new ArrayList<>(List.of(pool.get(40)))),
+                "the bottom cards must not be editable after they were revealed");
+
+        // 轮次与规则开关
+        helper.assertTrue(game.debugSetTurn(2), "debugSetTurn must work in the play phase");
+        helper.assertTrue(game.currentSeat() == 2, "the current seat must follow debugSetTurn");
+        helper.assertTrue(game.debugSetRuleSwitch("mixed-joker-rocket", true),
+                "a known rule switch must be accepted");
+        helper.assertTrue(game.ruleOptions().mixedJokerRocket(),
+                "the rule switch must reach the engine");
+        helper.assertFalse(game.debugSetRuleSwitch("definitely-not-a-switch", true),
+                "an unknown rule switch must be rejected");
+
+        // 报告：与离线调试器是同一份代码，所以格式与结论必须一致
+        String report = game.debugDump();
+        helper.assertTrue(report.contains("Seat 1 LANDLORD"),
+                "the dump must mark the landlord, got:\n" + report);
+        helper.assertTrue(report.contains("To act: seat 2"),
+                "the dump must show whose turn it is, got:\n" + report);
+        helper.assertTrue(report.contains("two jokers as rocket=on"),
+                "the dump must reflect the rule switches, got:\n" + report);
+        helper.succeed();
+    }
+
     /** 动作序号是线协议：老动作一个都不能移位，新动作只能追加在末尾。 */
     @GameTest(template = "empty")
     public static void actionIdsStayAppendOnly(GameTestHelper helper) {
