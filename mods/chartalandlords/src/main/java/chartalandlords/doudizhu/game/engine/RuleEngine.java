@@ -134,6 +134,12 @@ public final class RuleEngine {
             if (cards == 4 && counts[SMALL_JOKER_VALUE] == 2 && counts[BIG_JOKER_VALUE] == 2) {
                 return new Combo(ComboType.ROCKET, BIG_JOKER_VALUE, 1, cards, true);
             }
+            // 房规（默认关）：两副牌里「一小王 + 一大王」（两张）也算王炸。
+            // 标准四人双副牌规则下这不是王炸、也不是任何合法牌型，所以默认必须保持 null。
+            if (rule.mixedJokerRocket() && cards == 2 && counts[SMALL_JOKER_VALUE] == 1
+                    && counts[BIG_JOKER_VALUE] == 1) {
+                return new Combo(ComboType.ROCKET, BIG_JOKER_VALUE, 1, cards, true);
+            }
         } else if (cards == 2 && counts[SMALL_JOKER_VALUE] == 1 && counts[BIG_JOKER_VALUE] == 1) {
             return new Combo(ComboType.ROCKET, BIG_JOKER_VALUE, 1, cards, true);
         }
@@ -200,8 +206,9 @@ public final class RuleEngine {
             return true;
         }
         if (candidate.type() == ComboType.ROCKET) {
-            // 王炸最大，但王炸之间不能互压
-            return previous.type() != ComboType.ROCKET;
+            // 王炸最大。两副牌开房规后「两张王炸」与「四张王炸」会同时存在：按张数比大小，
+            // 同张数仍然不能互压（3 人局只有一种王炸，这条分支永远走不到）。
+            return previous.type() != ComboType.ROCKET || candidate.size() > previous.size();
         }
         if (previous.type() == ComboType.ROCKET) {
             return false;
@@ -430,6 +437,10 @@ public final class RuleEngine {
         if (rule.fourPlayer()) {
             if (hand[SMALL_JOKER_VALUE] >= 2 && hand[BIG_JOKER_VALUE] >= 2) {
                 return new int[]{SMALL_JOKER_VALUE, SMALL_JOKER_VALUE, BIG_JOKER_VALUE, BIG_JOKER_VALUE};
+            }
+            // 房规：两张王也算王炸（两副牌里它是较小的那种王炸）
+            if (rule.mixedJokerRocket() && hand[SMALL_JOKER_VALUE] >= 1 && hand[BIG_JOKER_VALUE] >= 1) {
+                return new int[]{SMALL_JOKER_VALUE, BIG_JOKER_VALUE};
             }
             return null;
         }

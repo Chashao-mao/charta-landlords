@@ -949,6 +949,28 @@ public final class PlayHarnessMain {
                 "eight of a kind is still a bomb in the variant");
         check(RuleEngine.classify(new int[]{3, 4, 5, 6, 7}, variant).type() == ComboType.STRAIGHT,
                 "straights are untouched by the variant");
+
+        // 房规（默认关）：两副牌里「一小王 + 一大王」也算王炸
+        RuleOptions house = RuleOptions.doubleDeck().withMixedJokerRocket(true);
+        int small = RuleEngine.SMALL_JOKER_VALUE;
+        int big = RuleEngine.BIG_JOKER_VALUE;
+        check(RuleEngine.classify(new int[]{small, big}, RuleOptions.doubleDeck()) == null,
+                "4p two jokers stay illegal by default");
+        check(RuleEngine.classify(new int[]{small, big}, house) != null
+                        && RuleEngine.classify(new int[]{small, big}, house).type() == ComboType.ROCKET,
+                "4p two jokers become a rocket with the house rule on");
+        check(!RuleEngine.beats(RuleEngine.classify(new int[]{small, big}, house),
+                        RuleEngine.classify(new int[]{small, small, big, big}, house)),
+                "the two-joker rocket cannot beat the four-joker rocket");
+        check(RuleEngine.beats(RuleEngine.classify(new int[]{small, small, big, big}, house),
+                        RuleEngine.classify(new int[]{small, big}, house)),
+                "the four-joker rocket beats the two-joker rocket");
+        int[] jokerHand = {small, big, 3, 4, 5};
+        check(hasType(RuleEngine.findLeads(jokerHand, house), house, ComboType.ROCKET),
+                "generator offers the two-joker rocket when the house rule is on");
+        RuleOptions plain = RuleOptions.doubleDeck();
+        check(!hasType(RuleEngine.findLeads(jokerHand, plain), plain, ComboType.ROCKET),
+                "generator offers no rocket by default with one joker of each kind");
     }
 
     // ------------------------------------------------------------------ 工具

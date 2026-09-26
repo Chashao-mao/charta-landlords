@@ -144,6 +144,8 @@
   "rule.chartalandlords.four_two_pair_kicker.description": "开启时 4444 + 55 合法；关闭时必须是两张不同点数的单牌",
   "rule.chartalandlords.jokers_as_wing_pair": "允许大小王同时当带牌",
   "rule.chartalandlords.jokers_as_wing_pair.description": "关闭时 333 + 小王 + 大王 不合法（Pagat 规则禁止同一手带两张王）",
+  "rule.chartalandlords.mixed_joker_rocket": "两张王也算王炸（四人局房规）",
+  "rule.chartalandlords.mixed_joker_rocket.description": "默认关闭：四人双副牌标准里王炸 = 两小王 + 两大王（四张）。开启后一小王 + 一大王也是王炸，四张王炸能压两张王炸",
   "rule.chartalandlords.max_airplane": "飞机最大三张数",
   "rule.chartalandlords.max_airplane.description": "同时约束飞机带单与带对的最大数量（2~6）",
   "rule.chartalandlords.scoring": "结算分数",

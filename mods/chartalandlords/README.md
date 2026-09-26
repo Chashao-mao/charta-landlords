@@ -55,6 +55,7 @@
 | 抢地主模式 | **开** | 关掉回到 1/2/3 分叫分 |
 | 明牌 / 加倍阶段 | 开 | 关掉则地主确定后直接开打 |
 | AI 难度 | 1（均衡） | `0 保守` / `1 均衡` / `2 激进` |
+| 两张王算王炸 | 关 | 四人局房规：一小王 + 一大王（两张）也算王炸；标准规则要求两小王 + 两大王（四张），开启后四张王炸能压两张王炸 |
 
 **AI 难度**：三个档位不是三份策略，而是一张权重表（`AiProfile`）传进同一个 `AiPolicy`，只改风格与紧迫感
 （叫分 / 抢地主 / 明牌加倍的门槛、什么时候动炸弹、什么时候开始封杀快走完的人），**规则一行不改**。
@@ -118,11 +119,31 @@ modrinth/                              Modrinth 项目页文案与上传配置
 
 ```powershell
 # 工作目录：mods\chartalandlords
-.\gradlew.bat clean build runGameTestServer dist   # 编译打包 + 34 个 GameTest + 发布产物
-& ..\..\tools\logic-check.ps1                      # 440 项断言，零 Minecraft 依赖，毫秒级
+.\gradlew.bat clean build runGameTestServer dist   # 编译打包 + 35 个 GameTest + 发布产物
+& ..\..\tools\logic-check.ps1                      # 466 项断言，零 Minecraft 依赖，毫秒级
 & ..\..\tools\compile-check.ps1 -IncludeTests      # 离线 javac 编译校验
 python tools\check_assets.py                       # 资源自检：.mccard 解码回像素逐字节对拍、牌堆 JSON、图标
 ```
+
+### 调试：自定义四家手牌
+
+`..\..\tools\debug-hands.ps1` 只编译 `game/engine/` 与 harness（零 Minecraft 依赖），把任意四家手牌、地主、
+底牌、上一手喂进规则引擎，直接打印**能出的组合 / 提示 / AI 决策**，并检查指定一手能不能出：
+
+```powershell
+# 四人局开着「两张王算王炸」房规，检查座位 1 出小王 + 大王（S B）能不能压一对 5
+& ..\..\tools\debug-hands.ps1 --players 4 `
+    --hand 0 "3 3 3 4 5 6 7" --hand 1 "S B 9 9 10 J Q" `
+    --hand 2 "3 4 5 6 7 8 9" --hand 3 "10 J Q K A 2 2" `
+    --landlord 0 --bottom "8 8 2" --last "0:5 5" --turn 1 `
+    --rule mixed-joker-rocket --probe "1:S B" --ascii
+& ..\..\tools\debug-hands.ps1 --help     # 全部参数与规则开关
+```
+
+* 牌面写法：`3 4 5 6 7 8 9 10 J Q K A 2` 加 `S`（小王）/ `B`（大王），空格、逗号、顿号都能分隔。
+* `--last 座位:牌` 设定上一手，`--probe 座位:牌` 检查某手是否合法，`--profile 0|1|2` 换 AI 档位，
+  `--rule` 开规则开关（`mixed-joker-rocket` / `no-three-with-two` / …），`--ascii` 让输出纯 ASCII。
+* 不带参数运行 = 自检模式；`logic-check.ps1` 会连它一起跑，所以这个调试器本身也有回归保护。
 
 * **`runGameTestServer` 在模组加载失败时仍报 `BUILD SUCCESSFUL`**（FML 崩溃后退出码仍是 0）——
   通过与否必须看日志里的 `All N required tests passed`。
@@ -154,6 +175,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\upload_modrinth.ps1   
 （抢 / 叫分 → 明牌加倍 → 出牌 → 结算）。
 
 ## 更新记录
+
+### 未发布（`feature/rule-debug-tools` 分支）
+
+* 新增房规开关**「两张王也算王炸」（默认关）**：四人局里一小王 + 一大王也算王炸；开了之后四张王炸能压两张王炸。
+  标准四人双副牌规则不变（王炸 = 两小王 + 两大王），所以默认行为与之前完全一致。
+* 新增**自定义四家手牌的离线调试器** `tools/debug-hands.ps1`：纯逻辑、不发散、`logic-check.ps1` 里一起跑。
 
 ### 1.8.0（首个公开版本）
 

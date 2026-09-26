@@ -176,10 +176,14 @@ public final class HandShape {
             return false;
         }
         RuleOptions rule = options == null ? RuleOptions.standard() : options;
+        boolean fourJokerRocket = unseenCounts.length > RuleEngine.BIG_JOKER_VALUE
+                && unseenCounts[RuleEngine.SMALL_JOKER_VALUE] >= 2
+                && unseenCounts[RuleEngine.BIG_JOKER_VALUE] >= 2;
         if (combo.type() == ComboType.ROCKET) {
-            return true;
+            // 王炸几乎永远无解。唯一例外：两副牌开了房规后「两小王 + 两大王」能压「一小王 + 一大王」。
+            return !(rule.fourPlayer() && combo.size() < 4 && fourJokerRocket);
         }
-        int neededJokers = rule.fourPlayer() ? 2 : 1;
+        int neededJokers = rule.fourPlayer() && !rule.mixedJokerRocket() ? 2 : 1;
         if (unseenCounts.length > RuleEngine.BIG_JOKER_VALUE
                 && unseenCounts[RuleEngine.SMALL_JOKER_VALUE] >= neededJokers
                 && unseenCounts[RuleEngine.BIG_JOKER_VALUE] >= neededJokers) {

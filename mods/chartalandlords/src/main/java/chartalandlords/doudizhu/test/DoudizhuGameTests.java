@@ -1470,6 +1470,53 @@ public class DoudizhuGameTests {
         helper.succeed();
     }
 
+    /**
+     * 房规「两张王也算王炸」：默认关、开关能走到引擎里、不扰动其它规则开关；
+     * 四人局默认两张王依旧非法（四人双副牌的标准规则要四张王）。
+     */
+    @GameTest(template = "empty")
+    public static void mixedJokerRocketOptionReachesTheEngine(GameTestHelper helper) {
+        Deck deck = ChartaMod.CARD_DECKS.getDeck(Doudizhu.id("doudizhu"));
+        List<CardPlayer> players = new ArrayList<>();
+        for (int seat = 0; seat < 4; seat++) {
+            players.add(new AiSeat("House-" + seat));
+        }
+        DoudizhuGame game = new DoudizhuGame(players, deck);
+        helper.assertTrue(game.getOptions().contains(game.mixedJokerRocketOption()),
+                "the two-joker-rocket option must be exposed in the option list");
+        helper.assertTrue(!game.ruleOptions().mixedJokerRocket(),
+                "the two-joker rocket must be off by default");
+        helper.assertTrue(game.ruleOptions().fourPlayer(), "four seats must mean the two-deck rules");
+
+        List<Card> twoJokers = cards(smallJoker(), bigJoker());
+        helper.assertTrue(DoudizhuRules.classify(twoJokers, game.ruleOptions()) == null,
+                "two jokers must stay illegal by default in a four-player game");
+
+        RuleOptions before = game.ruleOptions();
+        game.mixedJokerRocketOption().set(true);
+        RuleOptions after = game.ruleOptions();
+        helper.assertTrue(after.mixedJokerRocket(), "turning the option on must reach RuleOptions");
+        helper.assertTrue(before.fourPlayer() == after.fourPlayer()
+                        && before.threeWithTwo() == after.threeWithTwo()
+                        && before.fourWithTwo() == after.fourWithTwo()
+                        && before.jokersAsWingPair() == after.jokersAsWingPair()
+                        && before.maxAirplane() == after.maxAirplane(),
+                "the house rule must not disturb any other rule switch");
+
+        Combo combo = DoudizhuRules.classify(twoJokers, after);
+        helper.assertTrue(combo != null && combo.type() == ComboType.ROCKET,
+                "with the house rule on two jokers must classify as a rocket, got " + combo);
+        Combo fourJokers = DoudizhuRules.classify(
+                cards(smallJoker(), smallJoker(), bigJoker(), bigJoker()), after);
+        helper.assertTrue(DoudizhuRules.beats(fourJokers, combo) && !DoudizhuRules.beats(combo, fourJokers),
+                "the four-joker rocket must beat the two-joker one, and never the other way round");
+
+        game.mixedJokerRocketOption().set(false);
+        helper.assertTrue(!game.ruleOptions().mixedJokerRocket(),
+                "turning the option back off must be honoured");
+        helper.succeed();
+    }
+
     /** 动作序号是线协议：老动作一个都不能移位，新动作只能追加在末尾。 */
     @GameTest(template = "empty")
     public static void actionIdsStayAppendOnly(GameTestHelper helper) {

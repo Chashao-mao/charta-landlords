@@ -13,6 +13,10 @@ package chartalandlords.doudizhu.game.engine;
  * @param fourWithTwo              允许四带二 / 四带两对（默认 true；两副牌变体可关）
  * @param fourTwoSinglesMayBePair  四带二的「二」可以是一对（默认 true）
  * @param jokersAsWingPair         允许大小王同时作为同一手牌的带牌（默认 false，Pagat 禁止）
+ * @param mixedJokerRocket         4 人局也允许「一小王 + 一大王」（两张）算王炸（默认 false）。
+ *                                 四人双副牌的标准规则要求王炸 = 两小王 + 两大王（四张），
+ *                                 只拿一小一大在标准规则下根本不是合法牌型；打开这个开关就是房规。
+ *                                 两副牌里两种王炸会同时存在，此时按张数比大小（四张王炸 &gt; 两张王炸）。
  * @param maxStraight              顺子最大长度（张），默认 12（3..A）
  * @param maxPairStraight          连对最大对数，默认 12
  * @param maxAirplane              飞机最大三张数，默认 6
@@ -25,6 +29,7 @@ public record RuleOptions(
         boolean fourWithTwo,
         boolean fourTwoSinglesMayBePair,
         boolean jokersAsWingPair,
+        boolean mixedJokerRocket,
         int maxStraight,
         int maxPairStraight,
         int maxAirplane,
@@ -50,12 +55,12 @@ public record RuleOptions(
 
     /** 3 人局默认规则。 */
     public static RuleOptions standard() {
-        return new RuleOptions(false, true, true, true, false, 12, 12, 6, 5, 4);
+        return new RuleOptions(false, true, true, true, false, false, 12, 12, 6, 5, 4);
     }
 
     /** 4 人两副牌默认规则。 */
     public static RuleOptions doubleDeck() {
-        return new RuleOptions(true, true, true, true, false, 12, 12, 6, 5, 4);
+        return new RuleOptions(true, true, true, true, false, false, 12, 12, 6, 5, 4);
     }
 
     /** 便捷工厂：{@code true} → {@link #doubleDeck()}，否则 {@link #standard()}。 */
@@ -65,51 +70,57 @@ public record RuleOptions(
 
     public RuleOptions withThreeWithTwo(boolean value) {
         return new RuleOptions(fourPlayer, value, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
-                maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withFourWithTwo(boolean value) {
         return new RuleOptions(fourPlayer, threeWithTwo, value, fourTwoSinglesMayBePair, jokersAsWingPair,
-                maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withFourTwoSinglesMayBePair(boolean value) {
         return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, value, jokersAsWingPair,
-                maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withJokersAsWingPair(boolean value) {
         return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, value,
-                maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+    }
+
+    /** 房规：4 人局「一小王 + 一大王」（两张）也算王炸。默认关。 */
+    public RuleOptions withMixedJokerRocket(boolean value) {
+        return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
+                value, maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withFourPlayer(boolean value) {
         return new RuleOptions(value, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
-                maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withMaxStraight(int value) {
         return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
-                value, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, value, maxPairStraight, maxAirplane, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withMaxPairStraight(int value) {
         return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
-                maxStraight, value, maxAirplane, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, maxStraight, value, maxAirplane, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withMaxAirplane(int value) {
         return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
-                maxStraight, maxPairStraight, value, maxAirplaneSingle, maxAirplanePair);
+                mixedJokerRocket, maxStraight, maxPairStraight, value, maxAirplaneSingle, maxAirplanePair);
     }
 
     public RuleOptions withMaxAirplaneSingle(int value) {
         return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
-                maxStraight, maxPairStraight, maxAirplane, value, maxAirplanePair);
+                mixedJokerRocket, maxStraight, maxPairStraight, maxAirplane, value, maxAirplanePair);
     }
 
     public RuleOptions withMaxAirplanePair(int value) {
         return new RuleOptions(fourPlayer, threeWithTwo, fourWithTwo, fourTwoSinglesMayBePair, jokersAsWingPair,
-                maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, value);
+                mixedJokerRocket, maxStraight, maxPairStraight, maxAirplane, maxAirplaneSingle, value);
     }
 }

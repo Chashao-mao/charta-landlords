@@ -77,9 +77,17 @@ try {
     Remove-Item -LiteralPath $argFile -Force -ErrorAction SilentlyContinue
 }
 
-foreach ($main in 'HarnessMain', 'AiHarnessMain', 'PlayHarnessMain') {
-    & java -cp $outDir "chartalandlords.doudizhu.game.engine.$main"
-    if ($LASTEXITCODE -ne 0) { throw "logic-check: $main failed ($LASTEXITCODE)" }
+# main -> extra arguments. DebugHandsMain runs its self-test with --ascii: piped output and CI logs
+# are safest when the debug tool prints pure ASCII.
+$mains = @(
+    @{ name = 'HarnessMain'; extra = @() },
+    @{ name = 'AiHarnessMain'; extra = @() },
+    @{ name = 'PlayHarnessMain'; extra = @() },
+    @{ name = 'DebugHandsMain'; extra = @('--ascii') }
+)
+foreach ($main in $mains) {
+    & java -cp $outDir "chartalandlords.doudizhu.game.engine.$($main.name)" @($main.extra)
+    if ($LASTEXITCODE -ne 0) { throw "logic-check: $($main.name) failed ($LASTEXITCODE)" }
 }
 
 Write-Host 'logic-check OK' -ForegroundColor Green

@@ -81,6 +81,14 @@ public final class HarnessMain {
         expectNull(v(3, 3, 3, 3, 5), std, "four of a kind plus junk (5 cards)");
         expectNull(v(3, 3, 3, 3, 5, 5, 5), std, "four + three (7 cards)");
         expectNull(v(16, 17), four, "a lone small+big joker is not a 4p rocket");
+
+        // 房规：两副牌里「一小王 + 一大王」也算王炸（默认关，见 RuleOptions#mixedJokerRocket）
+        RuleOptions house = four.withMixedJokerRocket(true);
+        expect(ComboType.ROCKET, v(16, 17), house, "house rule: two jokers are a rocket");
+        expect(ComboType.ROCKET, v(16, 16, 17, 17), house, "house rule: four jokers stay a rocket");
+        expect(ComboType.PAIR, v(16, 16), house, "house rule: a joker pair is still a pair");
+        expectNull(v(16, 16, 17), house, "house rule: two small + one big is not a rocket");
+        expect(ComboType.ROCKET, v(16, 17), std, "the house rule flag never touches the 3p rocket");
     }
 
     // ================================================================== 2. boundaries
@@ -145,7 +153,7 @@ public final class HarnessMain {
 
     private static void classifyCaps() {
         section("4. classify: RuleOptions caps are honoured");
-        RuleOptions tiny = new RuleOptions(false, true, true, true, false, 5, 3, 2, 2, 2);
+        RuleOptions tiny = new RuleOptions(false, true, true, true, false, false, 5, 3, 2, 2, 2);
         expect(ComboType.STRAIGHT, v(3, 4, 5, 6, 7), tiny, "straight of 5 at maxStraight=5");
         expectNull(v(3, 4, 5, 6, 7, 8), tiny, "straight of 6 rejected at maxStraight=5");
         expect(ComboType.DOUBLE_STRAIGHT, v(3, 3, 4, 4, 5, 5), tiny, "3 pairs at maxPairStraight=3");

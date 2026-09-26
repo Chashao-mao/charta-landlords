@@ -231,6 +231,15 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
     private final GameOption.Bool JOKERS_AS_WING_PAIR = new GameOption.Bool(false,
             Component.translatable("rule.chartalandlords.jokers_as_wing_pair"),
             Component.translatable("rule.chartalandlords.jokers_as_wing_pair.description"));
+    /**
+     * 房规：4 人局「一小王 + 一大王」（两张）也算王炸。
+     *
+     * <p>默认关闭——四人双副牌的标准规则里王炸必须是两小王 + 两大王（四张），一小一大在标准规则下
+     * 根本不是合法牌型。打开后两副牌里两种王炸会同时存在，此时按张数比大小（四张王炸压两张王炸）。</p>
+     */
+    private final GameOption.Bool MIXED_JOKER_ROCKET = new GameOption.Bool(false,
+            Component.translatable("rule.chartalandlords.mixed_joker_rocket"),
+            Component.translatable("rule.chartalandlords.mixed_joker_rocket.description"));
     /** 飞机最大三张数（同时约束带单与带对的最大数量）。 */
     private final GameOption.Number MAX_AIRPLANE = new GameOption.Number(6, 2, 6,
             Component.translatable("rule.chartalandlords.max_airplane"),
@@ -441,7 +450,7 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
     @Override
     public List<GameOption<?>> getOptions() {
         return List.of(THREE_WITH_TWO, FOUR_WITH_TWO, FOUR_TWO_PAIR_KICKER, JOKERS_AS_WING_PAIR,
-                MAX_AIRPLANE, SCORING, GRAB_LANDLORD, DECLARE_BONUS, AI_DIFFICULTY);
+                MIXED_JOKER_ROCKET, MAX_AIRPLANE, SCORING, GRAB_LANDLORD, DECLARE_BONUS, AI_DIFFICULTY);
     }
 
     /** AI 难度档位选项（测试与界面需要直接改它；下标会随选项增减而变，所以显式暴露）。 */
@@ -457,6 +466,11 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
     /** 明牌 / 加倍选项。 */
     public GameOption.Bool declareBonusOption() {
         return DECLARE_BONUS;
+    }
+
+    /** 房规「两张王也算王炸」选项（默认关，测试与界面需要直接改它）。 */
+    public GameOption.Bool mixedJokerRocketOption() {
+        return MIXED_JOKER_ROCKET;
     }
 
     /** 当前 AI 难度档位（保守 / 均衡 / 激进）。 */
@@ -484,6 +498,7 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
                 .withFourWithTwo(FOUR_WITH_TWO.get())
                 .withFourTwoSinglesMayBePair(FOUR_TWO_PAIR_KICKER.get())
                 .withJokersAsWingPair(JOKERS_AS_WING_PAIR.get())
+                .withMixedJokerRocket(MIXED_JOKER_ROCKET.get())
                 .withMaxAirplane(MAX_AIRPLANE.get())
                 .withMaxAirplaneSingle(Math.max(2, MAX_AIRPLANE.get()))
                 .withMaxAirplanePair(Math.max(2, Math.min(4, MAX_AIRPLANE.get())));

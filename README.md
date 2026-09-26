@@ -36,12 +36,13 @@
 ```powershell
 cd mods\chartalandlords
 .\gradlew.bat build                # 编译打包 → build\libs\charta-landlords-<version>.jar
-.\gradlew.bat runGameTestServer    # 34 个 GameTest（启动一次无头服务端）
+.\gradlew.bat runGameTestServer    # 35 个 GameTest（启动一次无头服务端）
 .\gradlew.bat runClient            # 开发客户端
 .\gradlew.bat dist                 # 发布产物 → ..\..\dist\（jar + 项目图标 + SHA256SUMS.txt）
 
-cd ..\..                           # 纯逻辑校验：440 项断言，毫秒级，不需要 Minecraft
+cd ..\..                           # 纯逻辑校验：466 项断言，毫秒级，不需要 Minecraft
 & tools\logic-check.ps1
+& tools\debug-hands.ps1 --help     # 自定义四家手牌，离线验证任意手牌规则
 python mods\chartalandlords\tools\check_assets.py   # 资源自检：牌背解码回像素逐字节对拍等
 ```
 
@@ -54,7 +55,7 @@ python mods\chartalandlords\tools\check_assets.py   # 资源自检：牌背解�
 | --- | --- |
 | `mods/chartalandlords/` | 模组本体（NeoForge 工程：源码、资源、测试、工具、文档） |
 | `mods/chartalandlords/libs/` | Charta 1.2.5 编译期 jar（MPL-2.0，见该目录 `README.md`） |
-| `tools/` | 工作区级校验脚本（`logic-check.ps1` / `compile-check.ps1`） |
+| `tools/` | 工作区级校验脚本（`logic-check.ps1` / `compile-check.ps1` / `debug-hands.ps1`） |
 | `.github/workflows/` | CI：构建 + GameTest + 纯逻辑校验 |
 
 ## 改动前必读（硬规则）
