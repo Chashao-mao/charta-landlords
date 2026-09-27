@@ -5,6 +5,7 @@ import chartalandlords.doudizhu.game.engine.AiContext;
 import chartalandlords.doudizhu.game.engine.AiProfile;
 import chartalandlords.doudizhu.game.engine.RuleEngine;
 import chartalandlords.doudizhu.game.engine.RuleOptions;
+import chartalandlords.doudizhu.game.engine.StrongAi;
 import chartalandlords.doudizhu.game.engine.Combo;
 import chartalandlords.doudizhu.game.engine.DebugHands;
 import chartalandlords.doudizhu.Doudizhu;
@@ -936,12 +937,38 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
             return null;
         }
         boolean teammateLed = lastCombo != null && lastPlaySeat >= 0 && isTeammate(currentSeat, lastPlaySeat);
-        List<Card> choice = DoudizhuAi.choosePlay(hand, contextFor(currentSeat, teammateLed), ruleOptions(),
-                aiProfile());
+        List<Card> choice = strongPlay(hand, teammateLed);
         return choice == null ? null : new GamePlay(choice, PLAY_SLOT);
     }
 
     // ------------------------------------------------------------------ 叫分
+
+    /**
+     * AI 出牌：档位 2（激进）走强搜索策略（服务端线程上跑，自带节点预算与兜底校验），
+     * 其余档位维持原本的内置策略；任何异常或超预算都退回内置策略，只会更好不会更差。
+     */
+    private List<Card> strongPlay(List<Card> hand, boolean teammateLed) {
+        AiProfile profile = aiProfile();
+        if (profile != null && profile.ordinal() == 2) {
+            AiContext context = contextFor(currentSeat, teammateLed);
+            int[] handSizes = new int[players.size()];
+            for (int seat = 0; seat < players.size(); seat++) {
+                handSizes[seat] = getPlayerHand(players.get(seat)).size();
+            }
+            int[] heldBottom = new int[RuleEngine.RANK_SLOTS];
+            for (Card card : revealedBottomCards) {
+                heldBottom[DoudizhuValues.valueOf(card)] = 1;
+            }
+            int[] chosen = StrongAi.choose(DoudizhuValues.sortedValues(hand), context.previous(),
+                    landlordSeat, currentSeat, players.size(), handSizes, lastPlaySeat, passCount,
+                    context.unseenCounts(), heldBottom, ruleOptions(), 2);
+            List<Card> cards = chosen == null ? null : DoudizhuRules.cardsFor(hand, chosen);
+            if (cards != null) {
+                return cards;
+            }
+        }
+        return DoudizhuAi.choosePlay(hand, contextFor(currentSeat, teammateLed), ruleOptions(), profile);
+    }
 
     private void armBid() {
         if (players.isEmpty()) {
@@ -2440,10 +2467,10 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
                 : -1;
         int minOpponentHandSize = smallestOpponentHandSize(seat);
         if (lastCombo == null) {
-            return AiContext.lead(landlord, minOpponentHandSize, unseenCounts(seat));
+            return AiContext.lead(landlord, minOpponentHandSize, unseenCounts(seat), players.size(), seat, landlordSeat);
         }
         return AiContext.following(lastCombo, landlord, teammateLed, teammateHandSize, landlordHandSize,
-                minOpponentHandSize, unseenCounts(seat));
+                minOpponentHandSize, unseenCounts(seat), players.size(), seat, landlordSeat);
     }
 
     /**

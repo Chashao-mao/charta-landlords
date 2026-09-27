@@ -127,7 +127,7 @@ public final class AiHarnessMain {
             int[] hand = randomHand(random, 17);
             int[] previousValues = previousOrNull(random, std);
             Combo previous = previousValues == null ? null : RuleEngine.classify(previousValues, std);
-            AiContext ctx = new AiContext(previous, random.nextBoolean(), random.nextBoolean(),
+            AiContext ctx = AiContext.of(previous, random.nextBoolean(), random.nextBoolean(),
                     random.nextInt(4) - 1, random.nextInt(4) - 1, random.nextInt(4) - 1, null);
             int[] play = AiPolicy.choosePlayValues(hand, ctx, std);
             if (play == null) {
