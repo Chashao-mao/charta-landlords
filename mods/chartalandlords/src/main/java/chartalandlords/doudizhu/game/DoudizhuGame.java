@@ -266,8 +266,8 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
             Component.translatable("rule.chartalandlords.ai_conservative"),
             Component.translatable("rule.chartalandlords.ai_conservative.description"));
     private final GameOption.Bool AI_AGGRESSIVE = new GameOption.Bool(false,
-            Component.translatable("rule.chartalandlords.ai_conservative"),
-            Component.translatable("rule.chartalandlords.ai_conservative.description"));
+            Component.translatable("rule.chartalandlords.ai_aggressive"),
+            Component.translatable("rule.chartalandlords.ai_aggressive.description"));
 
     // ------------------------------------------------------------------ 计分状态
 
