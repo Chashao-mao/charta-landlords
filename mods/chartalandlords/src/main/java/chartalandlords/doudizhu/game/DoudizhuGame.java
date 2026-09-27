@@ -242,7 +242,7 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
             Component.translatable("rule.chartalandlords.mixed_joker_rocket"),
             Component.translatable("rule.chartalandlords.mixed_joker_rocket.description"));
     /** 飞机最大三张数（同时约束带单与带对的最大数量）。 */
-    private final GameOption.Number MAX_AIRPLANE = new GameOption.Number(6, 2, 6,
+    private final GameOption.Bool MAX_AIRPLANE = new GameOption.Bool(true,
             Component.translatable("rule.chartalandlords.max_airplane"),
             Component.translatable("rule.chartalandlords.max_airplane.description"));
     /** 是否结算分数。 */
@@ -500,9 +500,9 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
                 .withFourTwoSinglesMayBePair(FOUR_TWO_PAIR_KICKER.get())
                 .withJokersAsWingPair(JOKERS_AS_WING_PAIR.get())
                 .withMixedJokerRocket(MIXED_JOKER_ROCKET.get())
-                .withMaxAirplane(MAX_AIRPLANE.get())
-                .withMaxAirplaneSingle(Math.max(2, MAX_AIRPLANE.get()))
-                .withMaxAirplanePair(Math.max(2, Math.min(4, MAX_AIRPLANE.get())));
+                .withMaxAirplane(MAX_AIRPLANE.get() ? 6 : 3)
+                .withMaxAirplaneSingle(MAX_AIRPLANE.get() ? 6 : 3)
+                .withMaxAirplanePair(MAX_AIRPLANE.get() ? 4 : 3);
         return options;
     }
 

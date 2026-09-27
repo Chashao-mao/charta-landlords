@@ -1,0 +1,99 @@
+### 22:15:55 ping
+    pong mod=1.0.0 mailbox=G:\newmod\ChartaLandlords\.agent-bridge
+### END
+### 22:15:55 dump
+    state written to G:\newmod\ChartaLandlords\.agent-bridge\state.txt
+### END
+### 22:15:55 think
+    not at a Doudizhu table
+### END
+### 22:16:49 probe
+    probe card=J slot=6 cardId=0
+    (baseline next tick, click at t2, retract+click at t20)
+### END
+### 22:16:53 auto status
+    auto OFF  agent=search(exact<=16|hand<=10,k=12,nodes=20000)  note=probe card=J slot=6 cardId=0
+    t0: myTurn=true selectionCount=0 handSize=33 phase=PLAYING
+    t1: myTurn=true selectionCount=0 handSize=33 phase=PLAYING
+    t2: myTurn=true selectionCount=0 handSize=33 phase=PLAYING
+       -> click #1
+    t3: myTurn=true selectionCount=0 handSize=33 phase=PLAYING
+    t4: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t5: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t6: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t7: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t8: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t9: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t10: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t11: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t12: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t13: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t14: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t15: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t16: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t17: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t18: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t19: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t20: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+       -> retract
+    t21: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t22: myTurn=true selectionCount=0 handSize=33 phase=PLAYING
+    t23: myTurn=true selectionCount=0 handSize=33 phase=PLAYING
+    t24: myTurn=true selectionCount=0 handSize=33 phase=PLAYING
+       -> click #2 (after retract)
+    t25: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t26: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t27: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t28: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t29: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t30: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t31: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t32: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t33: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t34: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t35: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t36: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t37: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t38: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t39: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t40: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t41: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t42: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t43: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t44: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t45: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t46: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t47: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t48: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t49: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t50: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t51: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t52: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t53: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t54: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t55: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t56: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t57: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t58: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t59: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    t60: myTurn=true selectionCount=1 handSize=32 phase=PLAYING
+    
+### END
+### 22:28:18 auto on
+    auto ON  agent=search(exact<=16|hand<=10,k=12,nodes=20000)  note=auto ON
+### END
+### 22:29:04 auto status
+    auto ON  agent=search(exact<=16|hand<=10,k=12,nodes=20000)  note=plan PASS
+### END
+### 22:29:04 dump
+    state written to G:\newmod\ChartaLandlords\.agent-bridge\state.txt
+### END
+### 22:29:19 auto status
+    auto ON  agent=search(exact<=16|hand<=10,k=12,nodes=20000)  note=plan PASS
+### END
+### 22:29:39 auto status
+    auto ON  agent=search(exact<=16|hand<=10,k=12,nodes=20000)  note=played J J J J (4 clicks)
+### END
+### 22:29:39 dump
+    state written to G:\newmod\ChartaLandlords\.agent-bridge\state.txt
+### END

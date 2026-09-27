@@ -1,0 +1,12 @@
+# CL AgentKit state  22:29:39
+world      : singleplayer  minecraft:overworld
+in-table   : yes
+phase      : PLAYING   landlord: seat 0   turn: seat 1   you: seat 0
+rules      : 4 players / two decks, two-jokers-as-rocket=off, triple+kicker=on, four+two=on, both-jokers-as-kicker=off
+seat 0 [you, landlord] (4): A A A A   moman_
+seat 1 [farmer] (1): hidden — 只有张数可信   流浪商人
+seat 2 [farmer] (9): hidden — 只有张数可信   流浪商人
+seat 3 [farmer] (7): hidden — 只有张数可信   流浪商人
+bottom     : 3 5 5 8 9 Q K B
+last play  : seat 0 BOMB key J (4 cards)
+note       : 客户端只能看到自己与已明牌的座位；要全量手牌请 cmd doudizhu debug show 后读 logs/latest.log
