@@ -457,6 +457,11 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
                 MIXED_JOKER_ROCKET, MAX_AIRPLANE, SCORING, GRAB_LANDLORD, DECLARE_BONUS, AI_CONSERVATIVE, AI_AGGRESSIVE);
     }
 
+    /** 命令用：飞机带牌上限（true = 6 张 / 带对 4，false = 3 张）。 */
+    public void setAirplaneCap(boolean six) {
+        MAX_AIRPLANE.set(six);
+    }
+
     /** 按 0/1/2 设置 AI 档位（测试与命令用；两个开关都关 = 均衡）。 */
     public void setAiLevel(int level) {
         AI_CONSERVATIVE.set(level == 0);

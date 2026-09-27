@@ -43,8 +43,18 @@ public final class DoudizhuDebugCommand {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(Commands.literal("doudizhu")
-                .requires(DoudizhuDebugCommand::allowed)
+                // 普通玩家在牌桌上就能用：精确设置规则数值（开关式的选项界面只能给两档）
+                .then(Commands.literal("rule")
+                        .then(Commands.literal("airplane")
+                                .then(Commands.argument("value", IntegerArgumentType.integer(3, 6))
+                                        .executes(context -> airplane(context.getSource(),
+                                                IntegerArgumentType.getInteger(context, "value")))))
+                        .then(Commands.literal("ai")
+                                .then(Commands.argument("level", IntegerArgumentType.integer(0, 2))
+                                        .executes(context -> ai(context.getSource(),
+                                                IntegerArgumentType.getInteger(context, "level"))))))
                 .then(Commands.literal("debug")
+                        .requires(DoudizhuDebugCommand::allowed)
                         .executes(context -> help(context.getSource()))
                         .then(Commands.literal("help")
                                 .executes(context -> help(context.getSource())))
@@ -194,6 +204,25 @@ public final class DoudizhuDebugCommand {
         return 1;
     }
 
+    private static int airplane(CommandSourceStack source, int value) {
+        DoudizhuMenu menu = menuOf(source);
+        if (menu == null) {
+            return 0;
+        }
+        menu.getGame().setAirplaneCap(value >= 6);
+        source.sendSuccess(() -> Component.literal("飞机带牌上限 = " + (value >= 6 ? 6 : 3)), false);
+        return 1;
+    }
+
+    private static int ai(CommandSourceStack source, int level) {
+        DoudizhuMenu menu = menuOf(source);
+        if (menu == null) {
+            return 0;
+        }
+        menu.getGame().setAiLevel(level);
+        source.sendSuccess(() -> Component.literal("AI 档位 = " + level + "（0 保守 / 1 均衡 / 2 激进）"), false);
+        return 1;
+    }
     // ------------------------------------------------------------------ 工具
 
     /** 发命令的玩家必须正坐在一张斗地主牌桌前。 */
