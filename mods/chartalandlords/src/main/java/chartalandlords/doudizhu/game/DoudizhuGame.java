@@ -262,9 +262,12 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
             Component.translatable("rule.chartalandlords.declare_bonus"),
             Component.translatable("rule.chartalandlords.declare_bonus.description"));
     /** AI 难度档位：0 = 保守、1 = 均衡（默认）、2 = 激进。 */
-    private final GameOption.Number AI_DIFFICULTY = new GameOption.Number(1, 0, AiProfile.OPTION_COUNT - 1,
-            Component.translatable("rule.chartalandlords.ai_difficulty"),
-            Component.translatable("rule.chartalandlords.ai_difficulty.description"));
+    private final GameOption.Bool AI_CONSERVATIVE = new GameOption.Bool(false,
+            Component.translatable("rule.chartalandlords.ai_conservative"),
+            Component.translatable("rule.chartalandlords.ai_conservative.description"));
+    private final GameOption.Bool AI_AGGRESSIVE = new GameOption.Bool(false,
+            Component.translatable("rule.chartalandlords.ai_conservative"),
+            Component.translatable("rule.chartalandlords.ai_conservative.description"));
 
     // ------------------------------------------------------------------ 计分状态
 
@@ -451,12 +454,18 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
     @Override
     public List<GameOption<?>> getOptions() {
         return List.of(THREE_WITH_TWO, FOUR_WITH_TWO, FOUR_TWO_PAIR_KICKER, JOKERS_AS_WING_PAIR,
-                MIXED_JOKER_ROCKET, MAX_AIRPLANE, SCORING, GRAB_LANDLORD, DECLARE_BONUS, AI_DIFFICULTY);
+                MIXED_JOKER_ROCKET, MAX_AIRPLANE, SCORING, GRAB_LANDLORD, DECLARE_BONUS, AI_CONSERVATIVE, AI_AGGRESSIVE);
+    }
+
+    /** 按 0/1/2 设置 AI 档位（测试与命令用；两个开关都关 = 均衡）。 */
+    public void setAiLevel(int level) {
+        AI_CONSERVATIVE.set(level == 0);
+        AI_AGGRESSIVE.set(level == 2);
     }
 
     /** AI 难度档位选项（测试与界面需要直接改它；下标会随选项增减而变，所以显式暴露）。 */
-    public GameOption.Number aiDifficultyOption() {
-        return AI_DIFFICULTY;
+    public GameOption.Bool aiConservativeOption() {
+        return AI_CONSERVATIVE;
     }
 
     /** 抢地主模式选项。 */
@@ -476,7 +485,8 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
 
     /** 当前 AI 难度档位（保守 / 均衡 / 激进）。 */
     public AiProfile aiProfile() {
-        return AiProfile.of(AI_DIFFICULTY.get());
+        return AI_CONSERVATIVE.get() ? AiProfile.conservative()
+                : AI_AGGRESSIVE.get() ? AiProfile.aggressive() : AiProfile.balanced();
     }
 
     /** 是否处于抢地主模式。 */

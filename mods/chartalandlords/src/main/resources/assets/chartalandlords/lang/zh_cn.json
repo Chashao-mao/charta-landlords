@@ -154,8 +154,10 @@
   "rule.chartalandlords.grab_landlord.description": "默认开启。叫分变成一轮「抢 / 不抢」：抢的人越多倍数越高，最后一个抢的人当地主，底分固定 1；关掉则回到 1/2/3 分叫分",
   "rule.chartalandlords.declare_bonus": "明牌 / 加倍阶段",
   "rule.chartalandlords.declare_bonus.description": "地主确定后每人选一次「明牌 / 加倍 / 跳过」，各自把自己的个人倍数翻倍（明牌同时公开手牌）",
-  "rule.chartalandlords.ai_difficulty": "AI 难度",
-  "rule.chartalandlords.ai_difficulty.description": "0 = 保守（叫分门槛高、很少炸、很少抢）、1 = 均衡、2 = 激进（敢叫敢抢敢亮）；只调风格与紧迫感，规则不变",
+  "rule.chartalandlords.ai_conservative": "AI 保守",
+  "rule.chartalandlords.ai_aggressive": "AI 激进",
+  "rule.chartalandlords.ai_conservative.description": "叫分门槛高、很少炸、很少抢",
+  "rule.chartalandlords.ai_aggressive.description": "敢叫敢抢敢亮、更早封杀；两个都关 = 均衡。只调风格与紧迫感，规则不变",
 
   "message.chartalandlords.combo.single": "单张",
   "message.chartalandlords.combo.pair": "对子",

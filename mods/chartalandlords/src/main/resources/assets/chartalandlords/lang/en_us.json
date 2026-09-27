@@ -154,8 +154,10 @@
   "rule.chartalandlords.grab_landlord.description": "On by default. Bidding becomes one round of grab / no grab: each grab doubles the multiplier, the last grabber becomes the landlord, base stays 1. Turn it off for classic 1/2/3 bidding",
   "rule.chartalandlords.declare_bonus": "Reveal / double phase",
   "rule.chartalandlords.declare_bonus.description": "After the landlord is decided everyone picks Reveal, Double or Skip once; each doubles that player's personal multiplier (reveal also makes the hand public)",
-  "rule.chartalandlords.ai_difficulty": "AI difficulty",
-  "rule.chartalandlords.ai_difficulty.description": "0 = cautious (high bid bar, rarely bombs or grabs), 1 = balanced, 2 = aggressive (bids, grabs and reveals freely); style and urgency only, the rules never change",
+  "rule.chartalandlords.ai_conservative": "Cautious AI",
+  "rule.chartalandlords.ai_aggressive": "Aggressive AI",
+  "rule.chartalandlords.ai_conservative.description": "High bid bar, rarely bombs or grabs",
+  "rule.chartalandlords.ai_aggressive.description": "Bids, grabs and reveals freely and blocks earlier; both off = balanced. Style only, the rules never change",
 
   "message.chartalandlords.combo.single": "single",
   "message.chartalandlords.combo.pair": "pair",

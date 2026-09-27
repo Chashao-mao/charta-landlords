@@ -1429,7 +1429,7 @@ public class DoudizhuGameTests {
             players.add(new AiSeat("Profile-" + seat));
         }
         DoudizhuGame game = new DoudizhuGame(players, deck);
-        helper.assertTrue(game.getOptions().contains(game.aiDifficultyOption()),
+        helper.assertTrue(game.getOptions().contains(game.aiConservativeOption()),
                 "the difficulty option must be exposed in the option list");
         helper.assertTrue(game.getOptions().contains(game.grabLandlordOption()),
                 "the grab option must be exposed in the option list");
@@ -1438,19 +1438,19 @@ public class DoudizhuGameTests {
         helper.assertTrue(game.aiProfile().id().equals(AiProfile.balanced().id()),
                 "balanced must be the default difficulty, got " + game.aiProfile().id());
 
-        game.aiDifficultyOption().set(0);
+        game.setAiLevel(0);
         helper.assertTrue(game.aiProfile().id().equals(AiProfile.conservative().id()),
                 "option 0 must reach the cautious profile, got " + game.aiProfile().id());
-        game.aiDifficultyOption().set(2);
+        game.setAiLevel(2);
         helper.assertTrue(game.aiProfile().id().equals(AiProfile.aggressive().id()),
                 "option 2 must reach the aggressive profile, got " + game.aiProfile().id());
-        game.aiDifficultyOption().set(1);
+        game.setAiLevel(1);
         helper.assertTrue(game.aiProfile().id().equals(AiProfile.balanced().id()),
                 "option 1 must reach the balanced profile, got " + game.aiProfile().id());
 
         // 难度只调权重，不许动规则：换档前后 RuleOptions 必须逐项一致
         RuleOptions before = game.ruleOptions();
-        game.aiDifficultyOption().set(2);
+        game.setAiLevel(2);
         RuleOptions after = game.ruleOptions();
         helper.assertTrue(before.threeWithTwo() == after.threeWithTwo()
                         && before.fourWithTwo() == after.fourWithTwo()
@@ -1459,11 +1459,11 @@ public class DoudizhuGameTests {
                 "changing the AI difficulty must not change any rule option");
 
         // 三档都要能打完一整局（换档不会把 AI 卡住或产生非法出牌）
-        game.aiDifficultyOption().set(0);
+        game.setAiLevel(0);
         game.startGame();
         playToEnd(game);
         helper.assertTrue(game.isGameOver(), "the cautious AI must be able to finish a game");
-        game.aiDifficultyOption().set(2);
+        game.setAiLevel(2);
         game.startGame();
         playToEnd(game);
         helper.assertTrue(game.isGameOver(), "the aggressive AI must be able to finish a game");
