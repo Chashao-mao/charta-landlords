@@ -39,7 +39,8 @@ public final class StrongAi {
         AgentPolicy.Info info = new AgentPolicy.Info(options, Math.max(2, seats), landlordSeat, handSizes,
                 lastPlaySeat, passCount, unseen == null ? new int[RuleEngine.RANK_SLOTS] : unseen,
                 heldBottom == null ? new int[0] : heldBottom);
-        AgentPolicy policy = level >= 2 ? new SearchPolicy(SEED) : new DefaultPolicy(AiProfile.of(level));
+        AgentPolicy policy = new CooperativePolicy(
+                level >= 2 ? new SearchPolicy(SEED) : new DefaultPolicy(AiProfile.of(level)));
         int[] play = policy.choose(values, previous, landlord, seat, info);
         if (play == null || play.length == 0) {
             return null;

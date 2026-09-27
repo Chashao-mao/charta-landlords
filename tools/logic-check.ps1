@@ -84,6 +84,7 @@ $mains = @(
     @{ name = 'AiHarnessMain'; extra = @() },
     @{ name = 'PlayHarnessMain'; extra = @() },
     @{ name = 'DebugHandsMain'; extra = @('--ascii') }
+    @{ name = 'CoopHarnessMain'; extra = @() }
 )
 foreach ($main in $mains) {
     & java -cp $outDir "chartalandlords.doudizhu.game.engine.$($main.name)" @($main.extra)
