@@ -71,14 +71,15 @@ $classpath = ($jarList | Select-Object -Unique) -join ';'
 $srcRoot = Join-Path $Project 'src\main\java'
 $sources = Get-ChildItem $srcRoot -Recurse -Filter *.java
 if (-not $IncludeTests) {
-    $sources = $sources | Where-Object { $_.FullName -notmatch '\\test\\' }
+    $sources = $sources | Where-Object { $_.FullName -notmatch '[\\/]test[\\/]' }
 }
 
-$outDir = if ($OutDir) { $OutDir } else { Join-Path $Project 'build\compile-check' }
+$outDir = if ($OutDir) { $OutDir } else { Join-Path $Project (Join-Path 'build' 'compile-check') }
 if (Test-Path $outDir) { Remove-Item $outDir -Recurse -Force }
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
-$argFile = Join-Path $env:TEMP ("doudizhu-javac-{0}.args" -f ([guid]::NewGuid().ToString('N')))
+# GetTempPath(), not $env:TEMP: Linux has no TEMP and Join-Path rejects an empty Path.
+$argFile = Join-Path ([System.IO.Path]::GetTempPath()) ("doudizhu-javac-{0}.args" -f ([guid]::NewGuid().ToString('N')))
 $lines = @('-proc:none', '-nowarn', '-encoding', 'UTF-8', '-d', $outDir, '-classpath', $classpath)
 $lines += $sources | ForEach-Object { $_.FullName }
 # javac treats a leading BOM as an illegal option, so write UTF-8 without one.

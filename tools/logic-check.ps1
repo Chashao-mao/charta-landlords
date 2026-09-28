@@ -63,7 +63,10 @@ New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 Write-Host ("engine (pure): " + (($pure | ForEach-Object { Split-Path $_ -Leaf }) -join ', '))
 Write-Host ("harness      : " + (($harness | ForEach-Object { Split-Path $_ -Leaf }) -join ', '))
 
-$argFile = Join-Path $env:TEMP ("chartalandlords-logic-{0}.args" -f ([guid]::NewGuid().ToString('N')))
+# GetTempPath(), not $env:TEMP: the latter does not exist on Linux (GitHub Actions) and Join-Path
+# rejects an empty Path, which killed the CI step before javac even ran. GetTempPath() honours
+# TMPDIR/TMP/TEMP and falls back to /tmp.
+$argFile = Join-Path ([System.IO.Path]::GetTempPath()) ("chartalandlords-logic-{0}.args" -f ([guid]::NewGuid().ToString('N')))
 $lines = @('-proc:none', '-nowarn', '-encoding', 'UTF-8', '-d', $outDir)
 $lines += $pure
 $lines += $harness

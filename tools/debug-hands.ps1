@@ -45,7 +45,8 @@ $outDir = Join-Path $project (Join-Path 'build' 'debug-hands')
 if (Test-Path $outDir) { Remove-Item $outDir -Recurse -Force }
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
-$argFile = Join-Path $env:TEMP ("chartalandlords-debug-{0}.args" -f ([guid]::NewGuid().ToString('N')))
+# GetTempPath(), not $env:TEMP: Linux has no TEMP and Join-Path rejects an empty Path.
+$argFile = Join-Path ([System.IO.Path]::GetTempPath()) ("chartalandlords-debug-{0}.args" -f ([guid]::NewGuid().ToString('N')))
 $lines = @('-proc:none', '-nowarn', '-encoding', 'UTF-8', '-d', $outDir)
 $lines += $sources
 [System.IO.File]::WriteAllLines($argFile, $lines, (New-Object System.Text.UTF8Encoding($false)))
