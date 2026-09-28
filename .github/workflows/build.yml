@@ -25,7 +25,10 @@ jobs:
     env:
       # A cold ModDevGradle run downloads Minecraft/NeoForge and then decompiles + remaps them, which
       # does not fit in the MDK's default -Xmx1G (gradle.properties). Override it for CI runs.
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx3G -XX:MaxMetaspaceSize=1G'
+      # --no-daemon 让构建跑在启动器 JVM 里，所以堆必须给在 GRADLE_OPTS 上；
+      # 只写 -Dorg.gradle.jvmargs 是给守护进程的，无守护时没人读它（上一版 CI 就是这么 OOM 的：
+      # 日志有 task 列表、没有 FAILURE 区块、退出码 1）。
+      GRADLE_OPTS: '-Xmx3G -XX:MaxMetaspaceSize=1G -Dorg.gradle.jvmargs=-Xmx3G -XX:MaxMetaspaceSize=1G'
 
     steps:
       - name: Checkout repository
