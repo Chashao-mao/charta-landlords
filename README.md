@@ -1,9 +1,6 @@
 # ChartaLandlords
-[![Build](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml/badge.svg?branch=feature/rule-debug-tools)](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml)
+[![Build](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml/badge.svg)](https://github.com/Chashao-mao/charta-landlords/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-<!-- CI 徽章暂时钉在 feature/rule-debug-tools：main 上还没有这个 workflow，不钉分支会显示 no status。
-     PR #1 合并后把 `?branch=feature/rule-debug-tools` 去掉即可。 -->
-
 <img src="mods/chartalandlords/src/main/resources/icon.png" alt="ChartaLandlords" width="200">
 
 **斗地主 / Doudizhu (Fight the Landlord) for [Charta](https://modrinth.com/mod/charta)'s card tables.**
