@@ -155,9 +155,9 @@
   "rule.chartalandlords.declare_bonus": "明牌 / 加倍阶段",
   "rule.chartalandlords.declare_bonus.description": "地主确定后每人选一次「明牌 / 加倍 / 跳过」，各自把自己的个人倍数翻倍（明牌同时公开手牌）",
   "rule.chartalandlords.ai_conservative": "AI 保守",
-  "rule.chartalandlords.ai_aggressive": "AI 激进",
+  "rule.chartalandlords.ai_search": "AI 强化搜索",
   "rule.chartalandlords.ai_conservative.description": "叫分门槛高、很少炸、很少抢",
-  "rule.chartalandlords.ai_aggressive.description": "敢叫敢抢敢亮、更早封杀；两个都关 = 均衡。只调风格与紧迫感，规则不变",
+  "rule.chartalandlords.ai_search.description": "开启后 AI 用搜索策略决策（更强，出牌前会多想几十到几百毫秒）；可与「AI 保守」同时勾选，两者互不冲突",
 
   "message.chartalandlords.combo.single": "单张",
   "message.chartalandlords.combo.pair": "对子",

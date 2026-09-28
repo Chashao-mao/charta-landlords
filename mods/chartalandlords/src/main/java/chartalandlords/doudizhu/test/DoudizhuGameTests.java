@@ -1442,7 +1442,7 @@ public class DoudizhuGameTests {
         helper.assertTrue(game.aiProfile().id().equals(AiProfile.conservative().id()),
                 "option 0 must reach the cautious profile, got " + game.aiProfile().id());
         game.setAiLevel(2);
-        helper.assertTrue(game.aiProfile().id().equals(AiProfile.aggressive().id()),
+        helper.assertTrue(game.aiProfile().id().equals(AiProfile.balanced().id()),
                 "option 2 must reach the aggressive profile, got " + game.aiProfile().id());
         game.setAiLevel(1);
         helper.assertTrue(game.aiProfile().id().equals(AiProfile.balanced().id()),

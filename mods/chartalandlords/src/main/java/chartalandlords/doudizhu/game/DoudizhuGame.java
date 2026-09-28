@@ -267,8 +267,8 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
             Component.translatable("rule.chartalandlords.ai_conservative"),
             Component.translatable("rule.chartalandlords.ai_conservative.description"));
     private final GameOption.Bool AI_AGGRESSIVE = new GameOption.Bool(false,
-            Component.translatable("rule.chartalandlords.ai_aggressive"),
-            Component.translatable("rule.chartalandlords.ai_aggressive.description"));
+            Component.translatable("rule.chartalandlords.ai_search"),
+            Component.translatable("rule.chartalandlords.ai_search.description"));
 
     // ------------------------------------------------------------------ 计分状态
 
@@ -465,8 +465,8 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
 
     /** 按 0/1/2 设置 AI 档位（测试与命令用；两个开关都关 = 均衡）。 */
     public void setAiLevel(int level) {
-        AI_CONSERVATIVE.set(level == 0);
-        AI_AGGRESSIVE.set(level == 2);
+        AI_CONSERVATIVE.set(level == 0);   // 0 = 保守风格
+        AI_AGGRESSIVE.set(level >= 2);    // 2 = 开启强搜索（与风格正交，可叠加）
     }
 
     /** AI 难度档位选项（测试与界面需要直接改它；下标会随选项增减而变，所以显式暴露）。 */
@@ -491,8 +491,8 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
 
     /** 当前 AI 难度档位（保守 / 均衡 / 激进）。 */
     public AiProfile aiProfile() {
-        return AI_CONSERVATIVE.get() ? AiProfile.conservative()
-                : AI_AGGRESSIVE.get() ? AiProfile.aggressive() : AiProfile.balanced();
+        return AI_CONSERVATIVE.get() ? AiProfile.conservative() : AiProfile.balanced();
+        // 「AI 强化搜索」是独立开关（在 strongPlay 里用），不再参与风格判定。
     }
 
     /** 是否处于抢地主模式。 */
@@ -949,7 +949,7 @@ public class DoudizhuGame extends Game<DoudizhuGame, DoudizhuMenu> {
      */
     private List<Card> strongPlay(List<Card> hand, boolean teammateLed) {
         AiProfile profile = aiProfile();
-        if (profile != null && profile.ordinal() == 2) {
+        if (AI_AGGRESSIVE.get()) {
             AiContext context = contextFor(currentSeat, teammateLed);
             int[] handSizes = new int[players.size()];
             for (int seat = 0; seat < players.size(); seat++) {

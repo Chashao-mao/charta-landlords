@@ -155,9 +155,9 @@
   "rule.chartalandlords.declare_bonus": "Reveal / double phase",
   "rule.chartalandlords.declare_bonus.description": "After the landlord is decided everyone picks Reveal, Double or Skip once; each doubles that player's personal multiplier (reveal also makes the hand public)",
   "rule.chartalandlords.ai_conservative": "Cautious AI",
-  "rule.chartalandlords.ai_aggressive": "Aggressive AI",
+  "rule.chartalandlords.ai_search": "Stronger AI (search)",
   "rule.chartalandlords.ai_conservative.description": "High bid bar, rarely bombs or grabs",
-  "rule.chartalandlords.ai_aggressive.description": "Bids, grabs and reveals freely and blocks earlier; both off = balanced. Style only, the rules never change",
+  "rule.chartalandlords.ai_search.description": "The AI decides with the search policy (stronger, it thinks for a moment before playing). Can be combined with the cautious style - the two do not conflict",
 
   "message.chartalandlords.combo.single": "single",
   "message.chartalandlords.combo.pair": "pair",
