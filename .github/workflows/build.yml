@@ -57,16 +57,23 @@ jobs:
         working-directory: .
         # Invoke through `pwsh -File` instead of `./script.ps1`: the runner's checkout does not need
         # the executable bit on the .ps1 for this (the call operator / dot-slash form does).
-        run: pwsh -NoProfile -File tools/logic-check.ps1
+        # Tee to a log as well: when this step failed on the runner there was no captured output at
+        # all, so the failure report below could only show the (successful) Gradle logs.
+        run: |
+          set -o pipefail
+          pwsh -NoProfile -File tools/logic-check.ps1 2>&1 | tee logic-check.log
 
       # A failed Gradle run only tells the log reader "exit code 1". Earlier this step dumped the last
       # 30 lines, which for a ModDevGradle run is cache-maintenance noise - the real error sits earlier
       # in the log. Grep for the patterns that actually carry the failure instead.
       - name: Report failures
+        # The Gradle logs live under mods/chartalandlords (defaults.run.working-directory), the
+        # logic-check log at the repository root - work from the root and name both fully.
+        working-directory: .
         if: failure()
         run: |
           PATTERN='FAILURE|What went wrong|error:|error \[|Caused by:|Exception|Compilation failed|Could not|BUILD FAILED|All [0-9]+ required tests passed|Missing or unsupported'
-          for log in gradle-build.log gradle-gametest.log; do
+          for log in mods/chartalandlords/gradle-build.log mods/chartalandlords/gradle-gametest.log logic-check.log; do
             [ -f "$log" ] || continue
             echo "=== $log: failure lines ==="
             matches=$(grep -nE "$PATTERN" "$log" | tail -n 40 || true)
@@ -85,7 +92,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gradle-logs
-          path: mods/chartalandlords/gradle-*.log
+          path: |
+            mods/chartalandlords/gradle-*.log
+            logic-check.log
           if-no-files-found: ignore
 
       - name: Upload mod jar
