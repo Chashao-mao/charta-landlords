@@ -4,8 +4,8 @@ name: Build
 # the Gradle project itself is in mods/chartalandlords (that is what `defaults.run.working-directory`
 # below is for). The steps mirror the verification chains documented in README.md:
 #   1) ./gradlew build             - compile + package (the jar the release is made of)
-#   2) ./gradlew runGameTestServer - 34 GameTests against a real, headless server
-#   3) tools/logic-check.ps1       - 440 assertions on the Minecraft-free rule engine (milliseconds)
+#   2) ./gradlew runGameTestServer - 36 GameTests against a real, headless server
+#   3) tools/logic-check.ps1       - 472 assertions on the Minecraft-free rule engine (milliseconds)
 # The asset check (tools/check_assets.py) needs Python + Pillow, so it is only run locally for now.
 
 on:
@@ -32,7 +32,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK 21
-        # v4 only prints a deprecation notice (Node 20); keep it until the run is green, then bump.
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -57,16 +56,23 @@ jobs:
         # the executable bit on the .ps1 for this (the call operator / dot-slash form does).
         run: pwsh -NoProfile -File tools/logic-check.ps1
 
-      # A failed Gradle run only tells the log reader "exit code 1"; surface the real message on the
-      # commit/PR page (and as an artifact) so a failure can be diagnosed without shell access.
+      # A failed Gradle run only tells the log reader "exit code 1". Earlier this step dumped the last
+      # 30 lines, which for a ModDevGradle run is cache-maintenance noise - the real error sits earlier
+      # in the log. Grep for the patterns that actually carry the failure instead.
       - name: Report failures
         if: failure()
         run: |
+          PATTERN='FAILURE|What went wrong|error:|error \[|Caused by:|Exception|Compilation failed|Could not|BUILD FAILED|All [0-9]+ required tests passed|Missing or unsupported'
           for log in gradle-build.log gradle-gametest.log; do
             [ -f "$log" ] || continue
-            echo "=== tail of $log ==="
-            tail -n 30 "$log"
-            tail -n 30 "$log" | while IFS= read -r line; do
+            echo "=== $log: failure lines ==="
+            matches=$(grep -nE "$PATTERN" "$log" | tail -n 40 || true)
+            if [ -z "$matches" ]; then
+              echo "(no failure lines matched; last 15 lines follow)"
+              matches=$(tail -n 15 "$log" || true)
+            fi
+            printf '%s\n' "$matches"
+            printf '%s\n' "$matches" | while IFS= read -r line; do
               [ -n "$line" ] && echo "::error title=${log}::${line}"
             done
           done
